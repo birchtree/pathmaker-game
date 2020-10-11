@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class LevelManager : MonoBehaviour
@@ -28,10 +29,7 @@ public class LevelManager : MonoBehaviour
 
     private void CreateLevel()
     {
-    	string[] mapData = new string[]
-    	{
-    		"0000", "1111", "2222", "2222", "1111"
-    	};
+    	string[] mapData = ReadLevelText();
 
     	// stores length of the string on the first line as columns
     	int mapX = mapData[0].ToCharArray().Length;
@@ -62,5 +60,15 @@ public class LevelManager : MonoBehaviour
 	    		GameObject newTile = Instantiate(tilePrefabs[tileIndex]);
 	    		// Uses the new tile variable to change the position of the tile
 	    		newTile.transform.position = new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0);
+    }
+
+    private string[] ReadLevelText()
+    {
+        TextAsset bindData = Resources.Load("Level") as TextAsset;
+
+        // remove \n from the file
+        string tmpData = bindData.text.Replace(Environment.NewLine, string.Empty);
+
+        return tmpData.Split('-');
     }
 }

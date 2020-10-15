@@ -8,6 +8,9 @@ public class LevelManager : MonoBehaviour
     // Basics of Object Oriented Programming is to make anything private that you can
     [SerializeField]
     private GameObject[] tilePrefabs;
+    
+    [SerializeField]
+    private CameraMovement cameraMovement;
 
     public float TileSize
     {
@@ -36,6 +39,8 @@ public class LevelManager : MonoBehaviour
     	// stores the length of the array as how many rows
     	int mapY = mapData.Length;
 
+        Vector3 maxTile = Vector3.zero;
+
     	// Gets "0,0" from the main camera
     	Vector3 worldStart = Camera.main.ScreenToWorldPoint(new Vector3(0,Screen.height));
     	
@@ -46,20 +51,24 @@ public class LevelManager : MonoBehaviour
 
     		for(int x = 0; x < mapX; x++) // the columns
     		{
-    			PlaceTile(newTiles[x].ToString(), x, y, worldStart);
+    			maxTile = PlaceTile(newTiles[x].ToString(), x, y, worldStart);
     		}
+
+            cameraMovement.SetLimits(new Vector3(maxTile.x + TileSize, maxTile.y - TileSize));
     	}
     }
 
-    private void PlaceTile(string tileType, int x, int y, Vector3 worldStart)
+    private Vector3 PlaceTile(string tileType, int x, int y, Vector3 worldStart)
     {
-    			// "0" = grass "2" = sand "3" water
-    			int tileIndex = int.Parse(tileType);
+		// "0" = grass "2" = sand "3" water
+		int tileIndex = int.Parse(tileType);
 
-    			// Creates a new tile object that we can reference
-	    		GameObject newTile = Instantiate(tilePrefabs[tileIndex]);
-	    		// Uses the new tile variable to change the position of the tile
-	    		newTile.transform.position = new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0);
+		// Creates a new tile object that we can reference
+		GameObject newTile = Instantiate(tilePrefabs[tileIndex]);
+		// Uses the new tile variable to change the position of the tile
+		newTile.transform.position = new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0);
+
+        return newTile.transform.position;
     }
 
     private string[] ReadLevelText()
